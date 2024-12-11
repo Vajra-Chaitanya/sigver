@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import './VerificationPage.css';
 
 const VerificationPage = () => {
@@ -8,10 +7,14 @@ const VerificationPage = () => {
   const [image, setImage] = useState(null);
   const [verificationStatus, setVerificationStatus] = useState('');
   const [error, setError] = useState('');
+  const [result, setResult] = useState(null); // State to store result
+  const [similarity, setSimilarity] = useState(null); // State to store similarity score
+  const [uploadedSignature, setUploadedSignature] = useState(null); // State for uploaded signature
+  const [referenceSignature, setReferenceSignature] = useState(null); // State for reference signature
 
   // Function to verify account number with backend
   const handleAccountVerification = async () => {
-    setError('');  // Clear previous error messages
+    setError(''); // Clear previous error messages
 
     if (!accountNumber.trim()) {
       setError('Please enter a valid account number.');
@@ -29,7 +32,7 @@ const VerificationPage = () => {
 
       if (response.status === 200) {
         setIsAccountValid(true);
-        setError('');  // Clear error messages on success
+        setError(''); // Clear error messages on success
         alert(result.message); // Show success message
       } else {
         setIsAccountValid(false);
@@ -43,44 +46,36 @@ const VerificationPage = () => {
 
   // Handle signature image upload
   const handleImageUpload = (e) => {
-    setImage(e.target.files[0]);
+    const file = e.target.files[0];
+    setImage(file);
+
+    // Create a preview URL for the uploaded image
+    if (file) {
+      setUploadedSignature(URL.createObjectURL(file));
+    }
   };
 
   // Handle verification
-//   const handleVerify = async (storedSignature, verifyingSignature) => {
-//     const formData = new FormData();
-//     formData.append("stored_signature", storedSignature);
-//     formData.append("verifying_signature", verifyingSignature);
+  const handleVerify = async () => {
+    const formData = new FormData();
+    formData.append('account_number', accountNumber);
+    formData.append('verifying_signature', image); // Use the selected image file
 
-//     try {
-//         const response = await fetch("http://localhost:3000/verify", {
-//             method: "POST",
-//             body: formData,
-//         });
-//         const data = await response.json();
-//         alert(`Result: ${data.result}\nSimilarity: ${data.similarity}`);
-//     } catch (error) {
-//         console.error("Error verifying signature:", error);
-//     }
-// };
-const handleVerify = async () => {
-  const formData = new FormData();
-  formData.append("account_number", accountNumber);
-  // formData.append("stored_signature", image); // Use the selected image file
-  formData.append("verifying_signature", image); // Assuming same image for demo
-
-  try {
-      const response = await fetch("http://127.0.0.1:5000/api/signature/verify", {
-          method: "POST",
-          body: formData,
+    try {
+      const response = await fetch('http://127.0.0.1:5000/api/signature/verify', {
+        method: 'POST',
+        body: formData,
       });
       const data = await response.json();
-      alert(`Result: ${data.result}\nSimilarity: ${data.similarity}`);
-  } catch (error) {
-      console.log("Error verifying signature:", error);
-  }
-};
 
+      // Update state with verification result
+      setResult(data.result);
+      setSimilarity(data.similarity);
+      setReferenceSignature(data.referenceSignature); // Assuming this is a URL or base64 string
+    } catch (error) {
+      console.log('Error verifying signature:', error);
+    }
+  };
 
   return (
     <div>
@@ -133,7 +128,33 @@ const handleVerify = async () => {
             Verify
           </button>
 
-         
+          {/* Display verification result */}
+          {result && (
+            <div className="verification-result">
+              <h3>Verification Result:</h3>
+              <p>{result}</p>
+              {similarity !== null && <p>Similarity: {similarity}%</p>}
+
+              <div className="images-container">
+                <div className="image-box">
+                  <h4>Uploaded Signature</h4>
+                  {uploadedSignature ? (
+                    <img src={uploadedSignature} alt="Uploaded Signature" />
+                  ) : (
+                    <p>No uploaded signature available.</p>
+                  )}
+                </div>
+                <div className="image-box">
+                  <h4>Reference Signature</h4>
+                  {referenceSignature ? (
+                    <img src={referenceSignature} alt="Reference Signature" />
+                  ) : (
+                    <p>No reference signature available.</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

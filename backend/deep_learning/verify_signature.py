@@ -34,6 +34,7 @@ def retrieve_and_store_signature(account_number):
 
         # Save the stored signature to a file
         stored_signature_path = "stored_signature.jpg"
+        stored_signature_path = f"../static/stored_signature_{account_number}.jpg"
         cv2.imwrite(stored_signature_path, stored_signature)
 
         return stored_signature_path
@@ -82,8 +83,9 @@ def verify_signature():
         # Threshold for decision
         threshold = 0.8
         result = "Genuine" if similarity > threshold else "Forged"
-
-        return jsonify({"similarity": float(similarity), "result": result})
+        stored_signature_url = f"http://localhost:5000/static/stored_signature_{account_number}.jpg"
+        # stored_signature_url=r"D:\project_new\backend\static\stored_signature_102.jpg"
+        return jsonify({"similarity": float(similarity), "result": result,"referenceSignature":stored_signature_url})
 
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
