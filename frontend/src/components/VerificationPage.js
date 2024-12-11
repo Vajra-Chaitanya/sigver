@@ -47,14 +47,40 @@ const VerificationPage = () => {
   };
 
   // Handle verification
-  const handleVerify = () => {
-    if (accountNumber && image) {
-      setVerificationStatus('Your account has been successfully verified!');
-    } else {
-      setVerificationStatus('Please provide all the required information.');
-    }
-    alert(verificationStatus);
-  };
+//   const handleVerify = async (storedSignature, verifyingSignature) => {
+//     const formData = new FormData();
+//     formData.append("stored_signature", storedSignature);
+//     formData.append("verifying_signature", verifyingSignature);
+
+//     try {
+//         const response = await fetch("http://localhost:3000/verify", {
+//             method: "POST",
+//             body: formData,
+//         });
+//         const data = await response.json();
+//         alert(`Result: ${data.result}\nSimilarity: ${data.similarity}`);
+//     } catch (error) {
+//         console.error("Error verifying signature:", error);
+//     }
+// };
+const handleVerify = async () => {
+  const formData = new FormData();
+  formData.append("account_number", accountNumber);
+  // formData.append("stored_signature", image); // Use the selected image file
+  formData.append("verifying_signature", image); // Assuming same image for demo
+
+  try {
+      const response = await fetch("http://127.0.0.1:5000/api/signature/verify", {
+          method: "POST",
+          body: formData,
+      });
+      const data = await response.json();
+      alert(`Result: ${data.result}\nSimilarity: ${data.similarity}`);
+  } catch (error) {
+      console.log("Error verifying signature:", error);
+  }
+};
+
 
   return (
     <div>

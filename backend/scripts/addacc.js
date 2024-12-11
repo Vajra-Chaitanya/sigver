@@ -39,6 +39,12 @@ const runAddAccount = async () => {
                 email: 'user2@example.com',
                 image: '../uploads/vajra_sign.jpg', // Example local image path
             },
+            {
+                accountNumber: '103',
+                userName: 'User2',
+                email: 'user2@example.com',
+                image: '../uploads/satvik_sign.jpg', // Example local image path
+            },
             // Add more accounts as needed
         ];
 
