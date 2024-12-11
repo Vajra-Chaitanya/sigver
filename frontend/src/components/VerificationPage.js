@@ -133,7 +133,7 @@ const VerificationPage = () => {
             <div className="verification-result">
               <h3>Verification Result:</h3>
               <p>{result}</p>
-              {similarity !== null && <p>Similarity: {similarity}%</p>}
+              {similarity !== null && <p>Similarity: {similarity*100}%</p>}
 
               <div className="images-container">
                 <div className="image-box">

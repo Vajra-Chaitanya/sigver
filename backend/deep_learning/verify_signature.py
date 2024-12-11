@@ -66,8 +66,10 @@ def verify_signature():
         stored_signature_path = retrieve_and_store_signature(account_number)
 
         # Save the verifying signature temporarily
-        verifying_signature_path = "verifying_signature.jpg"
+        # verifying_signature_path = "verifying_signature.jpg"
+        verifying_signature_path = f"../static_ver/verifying_signature_{account_number}.jpg"
         verifying_signature_file.save(verifying_signature_path)
+       
 
         # Preprocess images
         stored_image = preprocess_image(stored_signature_path)
